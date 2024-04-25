@@ -1,0 +1,14 @@
+{
+    "name": "majorproject",
+    "version": "1.0.0",
+    "description": "Expense tracker application",
+    "scripts": {
+        "start:frontend": "cd frontend && npm start",
+        "build:frontend": "cd frontend && npm run build",
+        "start:backend": "cd backend && npm start",
+        "dev:backend": "cd backend && npm run dev"
+    },
+    "dependencies": {
+        "react-scripts": "^5.0.1"
+    }
+}
