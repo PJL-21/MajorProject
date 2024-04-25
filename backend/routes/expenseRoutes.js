@@ -82,17 +82,11 @@ module.exports = router;
 
 const express = require('express');
 const router = express.Router();
-
-// Require the auth middleware from the correct location
 const authMiddleware = require('../middleware/adminAuth');
-
-// Import the Expense model
 const Expense = require('../models/Expense');
 
-// Route to get all expenses
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    // Fetch all expenses from the database
     const expenses = await Expense.find();
     res.json(expenses);
   } catch (error) {
@@ -101,15 +95,10 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
-// Route to create a new expense
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    // Create a new expense instance based on the request body
     const newExpense = new Expense(req.body);
-
-    // Save the new expense to the database
     await newExpense.save();
-
     res.status(201).json(newExpense);
   } catch (error) {
     console.error(error);
@@ -117,25 +106,15 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-// Route to update an existing expense
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-
-    // Find the expense by ID
     const expense = await Expense.findById(id);
-
-    // Check if the expense exists
     if (!expense) {
       return res.status(404).json({ message: 'Expense not found' });
     }
-
-    // Update the expense with the request body
     Object.assign(expense, req.body);
-
-    // Save the updated expense to the database
     await expense.save();
-
     res.json(expense);
   } catch (error) {
     console.error(error);
@@ -143,14 +122,10 @@ router.put('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// Route to delete an existing expense
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-
-    // Find the expense by ID and delete it
     await Expense.findByIdAndDelete(id);
-
     res.json({ message: 'Expense deleted successfully' });
   } catch (error) {
     console.error(error);
@@ -158,5 +133,5 @@ router.delete('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// Export the router
 module.exports = router;
+

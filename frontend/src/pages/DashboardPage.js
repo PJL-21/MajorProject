@@ -56,6 +56,9 @@ const DashboardPage = () => {
     expenseType: '',
     progress: 'In Progress',
     amount: '',
+    createdBy: user.name,
+    createdAt: '',
+    updatedAt: '',
   });
 
   useEffect(() => {
@@ -101,6 +104,9 @@ const DashboardPage = () => {
         expenseType: '',
         progress: 'In Progress',
         amount: '',
+        createdBy: user.name,
+        createdAt: '',
+        updatedAt: '',
       });
       // Hide the expense form
       setShowExpenseForm(false);
@@ -143,7 +149,7 @@ const DashboardPage = () => {
 
           {/* Expense Form Card */}
           {showExpenseForm && (
-            <Card style={{ marginTop: '20px' }}>
+            <Card style={{ width: '300px', marginTop: '20px' }}>
               <CardContent>
                 <Typography variant="h6">Add Expense Ticket</Typography>
                 <form onSubmit={handleSubmit}>
@@ -180,6 +186,9 @@ const DashboardPage = () => {
                     required
                     style={{ marginBottom: '10px' }}
                   />
+                  <Typography variant="body2">Created By: {formData.createdBy}</Typography>
+                  <Typography variant="body2">Created At: {formData.createdAt}</Typography>
+                  <Typography variant="body2">Updated At: {formData.updatedAt}</Typography>
                   <Button type="submit" variant="contained" color="primary" style={{ marginTop: '10px' }}>
                     Add Ticket
                   </Button>
