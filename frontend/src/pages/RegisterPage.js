@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Typography, TextField, Button } from "@material-ui/core";
+import { Typography, TextField, Button, Box } from "@material-ui/core";
 import { useAuth } from "../components/AuthProvider";
 import axios from 'axios';
 
@@ -28,7 +28,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <div>
+    <Box sx={{p:2}}>
       <h2>Register</h2>
       <form onSubmit={handleSubmit}>
       <Typography variant="h4">Login</Typography>
@@ -68,7 +68,7 @@ const RegisterPage = () => {
       </Button>
       {error && <Typography color="error">{error}</Typography>}
       </form>
-    </div>
+    </Box>
   );
 };
 

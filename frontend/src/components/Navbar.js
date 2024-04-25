@@ -15,6 +15,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
+    //LOGOUT MODAL 
   };
 
   return (
