@@ -1,46 +1,3 @@
-/* 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Typography, List, ListItem, ListItemText } from '@material-ui/core';
-import { useAuth } from '../components/AuthProvider';
-
-const DashboardPage = () => {
-  const { user } = useAuth();
-  const [expenses, setExpenses] = useState([]);
-
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      try {
-        const response = await axios.get('/api/expenses');
-        setExpenses(response.data);
-      } catch (error) {
-        console.error('Error fetching expenses:', error);
-      }
-    };
-
-    fetchExpenses();
-  }, []);
-
-  return (
-    <div>
-      <Typography variant="h4">Dashboard</Typography>
-      <Typography variant="h5">Welcome, {user.name}!</Typography>
-      <Typography variant="h6">Your Expenses</Typography>
-      <List>
-        {expenses.map((expense) => (
-          <ListItem key={expense._id}>
-            <ListItemText primary={expense.title} secondary={`Amount: $${expense.amount}`} />
-          </ListItem>
-//ADD TICKET FUNCTIONALITY
-        ))}
-      </List>
-    </div>
-  );
-};
-
-export default DashboardPage;
-
-*/
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Typography, List, ListItem, ListItemText, TextField, MenuItem, Button, Card, CardContent, Grid } from '@material-ui/core';
@@ -54,29 +11,12 @@ const DashboardPage = () => {
   const [formData, setFormData] = useState({
     title: '',
     expenseType: '',
-    progress: 'In Progress',
+    progress: 'in_progress',
     amount: '',
     createdBy: user.name,
     createdAt: '',
     updatedAt: '',
   });
-
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      try {
-        const response = await axios.get('/api/expenses');
-        // Filter expenses based on progress
-        const inProgress = response.data.filter(expense => expense.progress === 'In Progress');
-        const completed = response.data.filter(expense => expense.progress === 'Completed');
-        setInProgressExpenses(inProgress);
-        setCompletedExpenses(completed);
-      } catch (error) {
-        console.error('Error fetching expenses:', error);
-      }
-    };
-
-    fetchExpenses();
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -86,34 +26,55 @@ const DashboardPage = () => {
     });
   };
 
+  const refreshExpenses = () => {
+    const token = localStorage.getItem("token")
+  
+      // Fetch updated expenses
+      axios.get('http://localhost:5001/api/expenses', {headers:{authorization:token}}).then((response)=>{
+        // Filter expenses based on progress
+      const inProgress = response.data.filter(expense => expense.progress === 'in_progress');
+      const completed = response.data.filter(expense => expense.progress === 'completed');
+  
+      // Update state with updated expenses
+      setInProgressExpenses(inProgress);
+      setCompletedExpenses(completed);
+      })
+  }
+
+  useEffect(() => {
+    refreshExpenses()
+    },[])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Submit expense ticket to backend
-      await axios.post('/api/expenses', formData);
-      // Fetch updated expenses
-      const response = await axios.get('/api/expenses');
-      // Filter expenses based on progress
-      const inProgress = response.data.filter(expense => expense.progress === 'In Progress');
-      const completed = response.data.filter(expense => expense.progress === 'Completed');
-      setInProgressExpenses(inProgress);
-      setCompletedExpenses(completed);
+      // Include user information in the expense data
+      const expenseData = {
+        ...formData,
+        createdBy: user.name, // Include the user's name
+        user: user._id, // Include the user's ID
+      };
+  
+      // Submit expense ticket to backend with user information
+      const token = localStorage.getItem("token")
+      await axios.post('http://localhost:5001/api/expenses', expenseData, {headers:{authorization:token}});
+
+      refreshExpenses()
+  
       // Clear form data
       setFormData({
         title: '',
         expenseType: '',
-        progress: 'In Progress',
+        progress: 'in_progress',
         amount: '',
-        createdBy: user.name,
-        createdAt: '',
-        updatedAt: '',
       });
+  
       // Hide the expense form
       setShowExpenseForm(false);
     } catch (error) {
       console.error('Error adding expense:', error);
     }
-  };
+  };  
 
   return (
     <Grid container spacing={3} justify="center">
@@ -175,6 +136,20 @@ const DashboardPage = () => {
                     <MenuItem value="Type 1">Type 1</MenuItem>
                     <MenuItem value="Type 2">Type 2</MenuItem>
                     <MenuItem value="Type 3">Type 3</MenuItem>
+                  </TextField>
+                  <TextField
+                    name="budgetCode"
+                    label="Budget Code"
+                    select
+                    value={formData.budgetCode}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                    style={{ marginBottom: '10px' }}
+                  >
+                    <MenuItem value="Code 1">Type 1</MenuItem>
+                    <MenuItem value="Code 2">Type 2</MenuItem>
+                    <MenuItem value="Code 3">Type 3</MenuItem>
                   </TextField>
                   <TextField
                     name="amount"

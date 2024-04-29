@@ -8,11 +8,10 @@ const User = require('../models/User');
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
-    console.log(email)
+
     // Check if the email is already registered
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      console.log(existingUser)
       return res.status(400).json({ message: 'Email already exists' });
     }
 
@@ -57,7 +56,5 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
-// Logout route 
 
 module.exports = router;

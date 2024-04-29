@@ -82,12 +82,12 @@ module.exports = router;
 
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middleware/adminAuth');
+const authMiddleware = require('../middleware/userAuth');
 const Expense = require('../models/Expense');
 
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    const expenses = await Expense.find();
+    const expenses = await Expense.find({ user: req.user.id });
     res.json(expenses);
   } catch (error) {
     console.error(error);
@@ -95,10 +95,27 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
+// Route to create a new expense
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const newExpense = new Expense(req.body);
+    // Extract expense information from the request body
+    const { title, amount, expenseType, progress, createdBy, user } = req.body;
+
+    // Create a new expense instance and associate it with the current user
+    const newExpense = new Expense({
+      title,
+      amount,
+      expenseType,
+      progress,
+      user: req.user.id, // Assign the user ID to the expense
+      createdBy: req.user.name, // Assign the user's name as the creator
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    // Save the new expense to the database
     await newExpense.save();
+
     res.status(201).json(newExpense);
   } catch (error) {
     console.error(error);
@@ -134,4 +151,3 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
-
