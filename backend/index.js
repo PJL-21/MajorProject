@@ -1,3 +1,4 @@
+const authMiddleware = require('./middleware/userAuth');
 const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -18,7 +19,7 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/expenses', require('./routes/expenseRoutes'));
-app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/admin', authMiddleware, require('./routes/adminRoutes'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

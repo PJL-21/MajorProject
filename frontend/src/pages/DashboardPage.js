@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Typography, List, ListItem, ListItemText, TextField, MenuItem, Button, Card, CardContent, Grid } from '@material-ui/core';
 import { useAuth } from '../components/AuthProvider';
+import ExpenseCard from '../components/ExpenseCard';
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -88,7 +89,7 @@ const DashboardPage = () => {
           <List>
             {inProgressExpenses.map((expense) => (
               <ListItem key={expense._id}>
-                <ListItemText primary={expense.title} secondary={`Amount: $${expense.amount}`} />
+                <ExpenseCard expense={expense}/>
               </ListItem>
             ))}
           </List>
