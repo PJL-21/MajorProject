@@ -36,6 +36,7 @@ const Navbar = () => {
     <>
       <AppBar position="static">
         <Toolbar>
+          <InsightsIcon/>
           <Typography variant="h6" className={classes.title}>
             Expense Tracker
           </Typography>
