@@ -9,6 +9,7 @@ import ExpensingInfoPage from './pages/ExpensingInfoPage';
 import ContactPage from './pages/ContactPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import RegisterPage from './pages/RegisterPage'
+import LandingPage from './pages/LandingPage';
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
       <Router>
         <Navbar />
         <Switch>
+          <Route exact path="/" component={LandingPage} />
           <Route exact path="/register" component={RegisterPage}/>
           <Route exact path="/login" component={LoginPage} />
           <PrivateRoute exact path="/dashboard" component={DashboardPage} />

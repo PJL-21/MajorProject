@@ -1,12 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middleware/userAuth');
+const userAuthMiddleware = require('../middleware/userAuth');
+const adminAuthMiddleware = require('../middleware/adminAuth');
 const Expense = require('../models/Expense');
 
-router.get('/', authMiddleware, async (req, res) => {
+// Route to get expenses based on user role
+router.get('/', userAuthMiddleware, async (req, res) => {
   try {
-    const expenses = await Expense.find({ user: req.user.id });
-    res.json(expenses);
+    // Check if the user is an admin
+    if (req.user.role === 'admin') {
+      // If admin, fetch all expenses
+      const expenses = await Expense.find();
+      res.json(expenses);
+    } else {
+      // If regular user, fetch only their expenses
+      const expenses = await Expense.find({ user: req.user.id });
+      res.json(expenses);
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
@@ -14,7 +24,7 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 // Route to create a new expense
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', userAuthMiddleware, async (req, res) => {
   try {
     // Extract expense information from the request body
     const { title, amount, expenseType, progress, createdBy, user } = req.body;
@@ -41,7 +51,7 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-router.put('/:id', authMiddleware, async (req, res) => {
+router.put('/:id', userAuthMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const expense = await Expense.findById(id);
@@ -57,7 +67,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', userAuthMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     await Expense.findByIdAndDelete(id);

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Typography, TextField, Button, Box } from "@material-ui/core";
+import { Typography, TextField, Button, Box, Container } from "@material-ui/core"; // Import Container from Material-UI
 import { useAuth } from "../components/AuthProvider";
 import axios from 'axios';
 
@@ -28,47 +28,48 @@ const RegisterPage = () => {
   };
 
   return (
-    <Box sx={{p:2}}>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-      <Typography variant="h4">Login</Typography>
-      <TextField
-        label="Email"
-        type="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={createChangeHandler("email")}
-        fullWidth
-        margin="normal"
-        required
-      />
-      <TextField
-        label="username"
-        type="text"
-        placeholder="Username"
-        value={formData.username}
-        onChange={createChangeHandler("username")}
-        fullWidth
-        margin="normal"
-        required
-      />
-      <TextField
-        label="password"
-        type="password"
-        placeholder="Password"
-        value={formData.password}
-        onChange={createChangeHandler("password")}
-        fullWidth
-        margin="normal"
-        required
-      />
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <Button variant="contained" color="primary" type="submit">
-        Submit
-      </Button>
-      {error && <Typography color="error">{error}</Typography>}
-      </form>
-    </Box>
+    <Container maxWidth="sm"> {/* Add Container with maxWidth="sm" */}
+      <Box mt={4} p={3} boxShadow={3} borderRadius={8} textAlign="center"> {/* Add Box with padding, boxShadow, borderRadius, and textAlign */}
+        <form onSubmit={handleSubmit}>
+          <Typography variant="h4" gutterBottom>Register</Typography>
+          <TextField
+            label="Email"
+            type="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={createChangeHandler("email")}
+            fullWidth
+            margin="normal"
+            required
+          />
+          <TextField
+            label="Username"
+            type="text"
+            placeholder="Username"
+            value={formData.username}
+            onChange={createChangeHandler("username")}
+            fullWidth
+            margin="normal"
+            required
+          />
+          <TextField
+            label="Password"
+            type="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={createChangeHandler("password")}
+            fullWidth
+            margin="normal"
+            required
+          />
+          {error && <Typography color="error">{error}</Typography>}
+          <Button variant="contained" color="primary" type="submit">
+            Submit
+          </Button>
+          {error && <Typography color="error">{error}</Typography>}
+        </form>
+      </Box>
+    </Container>
   );
 };
 
