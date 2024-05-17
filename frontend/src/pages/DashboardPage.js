@@ -1,53 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Typography, List, ListItem, Box, Button, Card, CardContent, Grid, TextField, MenuItem } from '@material-ui/core';
-import { useAuth } from '../components/AuthProvider';
-import ExpenseCard from '../components/ExpenseCard';
-import { SortableContext, verticalListSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { useDroppable, useSortable } from '@dnd-kit/core';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Text,
+  Modal,
+  Paper,
+  TextInput,
+  Flex,
+  Button,
+  Select,
+  Box,
+  NumberInput,
+  Group,
+} from "@mantine/core";
+import { useAuth } from "../components/AuthProvider";
+import ExpenseCard from "../components/ExpenseCard";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { useDroppable } from "@dnd-kit/core";
+
+const testExpense = {
+  _id: 5,
+  expenseType: "idk",
+  amount: 5,
+  title: "cool title",
+  createBy: "goat",
+};
 
 const DashboardPage = () => {
   const { user } = useAuth();
-  const [inProgressExpenses, setInProgressExpenses] = useState([]);
-  const [submittedExpenses, setSubmittedExpenses] = useState([]);
-  const [approvedExpenses, setApprovedExpenses] = useState([]);
-  const [completedExpenses, setCompletedExpenses] = useState([]);
+  const [expenses, setExpenses] = useState([]);
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    expenseType: '',
-    progress: 'in_progress',
-    amount: '',
+    title: "",
+    expenseType: "",
+    progress: "in_progress",
+    amount: "",
     createdBy: user.name,
-    createdAt: '',
-    updatedAt: '',
+    createdAt: "",
+    updatedAt: "",
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
+  const handleChange = (key, value) => {
+    setFormData((formData) => ({
       ...formData,
-      [name]: value,
-    });
+      [key]: value,
+    }));
   };
 
   const refreshExpenses = () => {
+    console.log("Refreshing");
     const token = localStorage.getItem("token");
-  
+
     // Fetch updated expenses
-    axios.get('http://localhost:5001/api/expenses', {headers:{authorization:token}}).then((response)=>{
-      // Filter expenses based on progress
-      const inProgress = response.data.filter(expense => expense.progress === 'in_progress');
-      const submitted = response.data.filter(expense => expense.progress === 'submitted');
-      const approved = response.data.filter(expense => expense.progress === 'approved');
-      const completed = response.data.filter(expense => expense.progress === 'completed');
-  
-      // Update state with updated expenses
-      setInProgressExpenses(inProgress);
-      setSubmittedExpenses(submitted);
-      setApprovedExpenses(approved);
-      setCompletedExpenses(completed);
-    });
+    axios
+      .get("http://localhost:5001/api/expenses", {
+        headers: { authorization: token },
+      })
+      .then((response) => {
+        // Filter expenses based on progress
+
+        // Update state with updated expenses
+        console.log(response);
+        setExpenses(response.data);
+      });
   };
 
   useEffect(() => {
@@ -63,189 +80,160 @@ const DashboardPage = () => {
         createdBy: user.name, // Include the user's name
         user: user._id, // Include the user's ID
       };
-  
+
       // Submit expense ticket to backend with user information
       const token = localStorage.getItem("token");
-      await axios.post('http://localhost:5001/api/expenses', expenseData, {headers:{authorization:token}});
+      await axios.post("http://localhost:5001/api/expenses", expenseData, {
+        headers: { authorization: token },
+      });
 
       refreshExpenses();
-  
+
       // Clear form data
       setFormData({
-        title: '',
-        expenseType: '',
-        progress: 'in_progress',
-        amount: '',
+        title: "",
+        expenseType: "",
+        progress: "in_progress",
+        amount: "",
       });
-  
+
       // Hide the expense form
       setShowExpenseForm(false);
     } catch (error) {
-      console.error('Error adding expense:', error);
-    }
-  };  
-
-  const handleDrop = async (event) => {
-    const { active, over } = event;
-    const activeId = active.id;
-    const overId = over.id;
-    const expense = inProgressExpenses.find(expense => expense._id === activeId);
-
-    if (activeId !== overId && expense) {
-      try {
-        const updatedExpense = {
-          ...expense,
-          progress: overId,
-        };
-
-        const token = localStorage.getItem("token");
-        await axios.put(`http://localhost:5001/api/expenses/${activeId}`, updatedExpense, {headers:{authorization:token}});
-
-        refreshExpenses();
-      } catch (error) {
-        console.error('Error updating expense:', error);
-      }
+      console.error("Error adding expense:", error);
     }
   };
 
+  const submitted = expenses.filter(
+    (expense) => expense.progress === "submitted"
+  );
+  const approved = expenses.filter(
+    (expense) => expense.progress === "approved"
+  );
+  const inProgress = expenses.filter(
+    (expense) => expense.progress === "in_progress"
+  );
+  const completed = expenses.filter(
+    (expense) => expense.progress === "completed"
+  );
+
   return (
-    <Grid container spacing={3} justify="center">
-      <Grid item xs={10}>
-        <div style={{ padding: '20px' }}>
-          <Typography variant="h4">Dashboard</Typography>
-          <Typography variant="h6">Your Expenses</Typography>
-          
-          {/* Box around the expense tickets */}
-          <Box border={1} borderRadius={8} borderColor="grey.300" p={2} mt={2} display="flex" overflowX="auto">
-            {/* In Progress Expenses */}
-            <Box {...useDroppable({ id: 'inProgressDroppable' })} style={{ flex: '1' }} drop={handleDrop}>
-              <div {...SortableContext} style={{ display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="h6">In Progress</Typography>
-                <SortableContext items={inProgressExpenses} strategy={verticalListSortingStrategy}>
-                  <List>
-                    {inProgressExpenses.map((expense, index) => (
-                      <ListItem key={expense._id}>
-                        <ExpenseCard expense={expense} index={index} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </SortableContext>
-              </div>
-            </Box>
-            {/* Submitted Expenses */}
-            <Box {...useDroppable({ id: 'submittedDroppable' })} style={{ flex: '1' }} drop={handleDrop}>
-              <div {...SortableContext} style={{ display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="h6">Submitted</Typography>
-                <SortableContext items={submittedExpenses} strategy={verticalListSortingStrategy}>
-                  <List>
-                    {submittedExpenses.map((expense, index) => (
-                      <ListItem key={expense._id}>
-                        <ExpenseCard expense={expense} index={index} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </SortableContext>
-              </div>
-            </Box>
-            {/* Approved Expenses */}
-            <Box {...useDroppable({ id: 'approvedDroppable' })} style={{ flex: '1' }} drop={handleDrop}>
-              <div {...SortableContext} style={{ display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="h6">Approved</Typography>
-                <SortableContext items={approvedExpenses} strategy={verticalListSortingStrategy}>
-                  <List>
-                    {approvedExpenses.map((expense, index) => (
-                      <ListItem key={expense._id}>
-                        <ExpenseCard expense={expense} index={index} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </SortableContext>
-              </div>
-            </Box>
-            {/* Completed Expenses */}
-            <Box>
-              <Typography variant="h6">Completed</Typography>
-              <List>
-                {completedExpenses.map((expense) => (
-                  <ListItem key={expense._id}>
-                    <ListItemText primary={expense.title} secondary={`Amount: $${expense.amount}`} />
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
+    <>
+      <Modal
+        opened={showExpenseForm}
+        onClose={() => setShowExpenseForm(false)}
+        centered
+        size="md"
+        title="Add Expense Ticket"
+      >
+        <form onSubmit={handleSubmit}>
+          <Flex direction="column" gap="xs">
+            <TextInput
+              name="title"
+              label="Expense Title"
+              value={formData.title}
+              onChange={(e) => handleChange("title", e.currentTarget.value)}
+              required
+              placeholder="Title"
+            />
+            <Select
+              name="expenseType"
+              label="Expense Type"
+              value={formData.expenseType}
+              onChange={(value) => handleChange("expenseType", value)}
+              required
+              data={["Type 1", "Type 2", "Type 3"]}
+              placeholder="Type"
+            />
+            <NumberInput
+              name="amount"
+              label="Expense Amount"
+              value={formData.amount}
+              onChange={(e) => handleChange("amount", e)}
+              required
+              placeholder="0.00"
+              min={0}
+              decimalScale={2}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              style={{ marginTop: "10px" }}
+            >
+              Add Ticket
+            </Button>
+          </Flex>
+        </form>
+      </Modal>
+
+      <Group align="middle" justify="space-between">
+        <Text size="lg" mb="sm" fw={600}>
+          Dashboard
+        </Text>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setShowExpenseForm(true)}
+        >
+          Add Expense
+        </Button>
+      </Group>
+      <Paper withBorder>
+        <Flex px="xs">
+          <Box
+            style={{ borderRight: "1px solid #DDD", flexBasis: "100%" }}
+            px="xs"
+          >
+            <Text component="h4" align="center" py="xs">
+              Submitted
+            </Text>
+            <Flex direction="column" gap="xs">
+              {submitted.map((expense) => (
+                <ExpenseCard expense={expense} key={expense._id} />
+              ))}
+            </Flex>
           </Box>
-
-          {/* Add Expense Form Button */}
-          <Button variant="contained" color="primary" onClick={() => setShowExpenseForm(true)}>
-            Add Expense
-          </Button>
-
-          {/* Expense Form Card */}
-          {showExpenseForm && (
-            <Card style={{ width: '300px', marginTop: '20px' }}>
-              <CardContent>
-                <Typography variant="h6">Add Expense Ticket</Typography>
-                <form onSubmit={handleSubmit}>
-                  <TextField
-                    name="title"
-                    label="Expense Title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                    style={{ marginBottom: '10px' }}
-                  />
-                  <TextField
-                    name="expenseType"
-                    label="Expense Type"
-                    select
-                    value={formData.expenseType}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                    style={{ marginBottom: '10px' }}
-                  >
-                    <MenuItem value="Type 1">Type 1</MenuItem>
-                    <MenuItem value="Type 2">Type 2</MenuItem>
-                    <MenuItem value="Type 3">Type 3</MenuItem>
-                  </TextField>
-                  <TextField
-                    name="budgetCode"
-                    label="Budget Code"
-                    select
-                    value={formData.budgetCode}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                    style={{ marginBottom: '10px' }}
-                  >
-                    <MenuItem value="Code 1">Type 1</MenuItem>
-                    <MenuItem value="Code 2">Type 2</MenuItem>
-                    <MenuItem value="Code 3">Type 3</MenuItem>
-                  </TextField>
-                  <TextField
-                    name="amount"
-                    label="Expense Amount"
-                    type="number"
-                    value={formData.amount}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                    style={{ marginBottom: '10px' }}
-                  />
-                  <Typography variant="body2">Created By: {formData.createdBy}</Typography>
-                  <Typography variant="body2">Created At: {formData.createdAt}</Typography>
-                  <Typography variant="body2">Updated At: {formData.updatedAt}</Typography>
-                  <Button type="submit" variant="contained" color="primary" style={{ marginTop: '10px' }}>
-                    Add Ticket
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </Grid>
-    </Grid>
+          <Box
+            style={{ borderRight: "1px solid #DDD", flexBasis: "100%" }}
+            px="xs"
+          >
+            <Text component="h4" align="center" py="xs">
+              Approved
+            </Text>
+            <Flex direction="column" gap="xs">
+              {approved.map((expense) => (
+                <ExpenseCard expense={expense} key={expense._id} />
+              ))}
+            </Flex>
+          </Box>
+          <Box
+            style={{ borderRight: "1px solid #DDD", flexBasis: "100%" }}
+            px="xs"
+          >
+            <Text component="h4" align="center" py="xs">
+              In Progress
+            </Text>
+            <Flex direction="column" gap="xs">
+              {inProgress.map((expense) => (
+                <ExpenseCard expense={expense} key={expense._id} />
+              ))}
+            </Flex>
+          </Box>
+          <Box style={{ flexBasis: "100%" }} px="xs">
+            <Text component="h4" align="center" py="xs">
+              Completed
+            </Text>
+            <Flex direction="column" gap="xs">
+              {completed.map((expense) => (
+                <ExpenseCard expense={expense} key={expense._id} />
+              ))}
+            </Flex>
+          </Box>
+        </Flex>
+      </Paper>
+      {/* Add Expense Form Button */}
+    </>
   );
 };
 

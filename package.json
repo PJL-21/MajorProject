@@ -7,9 +7,5 @@
         "build:frontend": "cd frontend && npm run build",
         "start:backend": "cd backend && npm start",
         "dev:backend": "cd backend && npm run dev"
-    },
-    "dependencies": {
-        "@mui/icons-material": "^5.15.15",
-        "react-scripts": "^5.0.1"
     }
 }

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Typography, List, ListItem, ListItemText } from '@material-ui/core';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const AdminDashboardPage = () => {
   const [expenses, setExpenses] = useState([]);
@@ -8,10 +7,10 @@ const AdminDashboardPage = () => {
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
-        const response = await axios.get('/api/expenses');
+        const response = await axios.get("/api/expenses");
         setExpenses(response.data);
       } catch (error) {
-        console.error('Error fetching expenses:', error);
+        console.error("Error fetching expenses:", error);
       }
     };
 
@@ -20,15 +19,19 @@ const AdminDashboardPage = () => {
 
   return (
     <div>
-      <Typography variant="h4">Admin Dashboard</Typography>
-      <Typography variant="h5">Expenses</Typography>
-      <List>
+      <Text variant="h4">Admin Dashboard</Text>
+      <Text variant="h5">Expenses</Text>
+      <ul>
         {expenses.map((expense) => (
-          <ListItem key={expense._id}>
-            <ListItemText primary={expense.title} secondary={`Amount: $${expense.amount}`} />
-          </ListItem>
+          <li key={expense._id}>
+            {/* TODO */}
+            <Text
+              primary={expense.title}
+              secondary={`Amount: $${expense.amount}`}
+            />
+          </li>
         ))}
-      </List>
+      </ul>
     </div>
   );
 };

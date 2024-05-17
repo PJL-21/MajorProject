@@ -1,15 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import { CssBaseline, ThemeProvider } from '@material-ui/core';
-import theme from './theme';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { MantineProvider } from "@mantine/core";
+import { BrowserRouter } from "react-router-dom";
 
-ReactDOM.render(
+const theme = {
+  primaryColor: "orange",
+  primaryShade: 5,
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+    <MantineProvider theme={theme}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </MantineProvider>
+  </React.StrictMode>
 );

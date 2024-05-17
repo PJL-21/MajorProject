@@ -1,45 +1,87 @@
-import React from 'react';
-import { Button, Card, CardContent, Typography } from '@material-ui/core';
-import { useAuth } from '../components/AuthProvider';
-import axios from 'axios';
+// ExpenseCard.js
+import React from "react";
+import axios from "axios";
+import { Paper, Text, Button } from "@mantine/core";
+import { useAuth } from "../components/AuthProvider";
 
-const ExpenseCard = ({ expense, index }) => {
+const ExpenseCard = ({ expense, refreshExpenses }) => {
   const { user } = useAuth();
 
-  const onAssignClick = () => {
-    const token = localStorage.getItem("token");
-    axios.put(`http://localhost:5001/api/admin/expenses/${expense._id}/assign`, undefined, {
-      headers: { Authorization: token },
-    });
+  const isAdmin = user.role === "admin";
+
+  const onAssignClick = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: { Authorization: token },
+      };
+      await axios.put(
+        `http://localhost:5001/api/admin/expenses/${expense._id}/assign`,
+        undefined,
+        config
+      );
+      refreshExpenses();
+    } catch (error) {
+      console.error("Error assigning expense:", error);
+    }
   };
 
   const onDragStart = (event) => {
+    event.dataTransfer.setData("text/plain", expense._id);
+  };
+
+  const onDragOver = (event) => {
     event.preventDefault();
   };
 
-  const onDragEnd = () => {
-    // Handle sorting logic here
-    console.log(`Dragged item with index ${index}`);
+  const onDrop = async (event) => {
+    event.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const expenseId = event.dataTransfer.getData("text/plain");
+      const updatedExpense = {
+        ...expense,
+        progress: event.currentTarget.getAttribute("data-progress"),
+      };
+      await axios.put(
+        `http://localhost:5001/api/expenses/${expenseId}`,
+        updatedExpense,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      refreshExpenses();
+    } catch (error) {
+      console.error("Error updating expense:", error);
+    }
   };
 
   return (
-    <Card variant="outlined" draggable="true" onDragStart={onDragStart} onDragEnd={onDragEnd}>
-      <CardContent>
-        <Typography variant="h5" component="h2">
-          {expense.title}
-        </Typography>
-        <Typography color="textSecondary">
-          Expense Type: {expense.expenseType}
-        </Typography>
-        <Typography color="textSecondary">
-          Amount: ${expense.amount}
-        </Typography>
-        <Typography color="textSecondary">
-          Created By: {expense.createdBy}
-        </Typography>
-        {user.role === 'admin' && <Button onClick={onAssignClick}>Assign to me</Button>}
-      </CardContent>
-    </Card>
+    <Paper
+      withBorder
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      p="xs"
+      >
+      <Text component="h4" fw={600}>
+        {expense.title}
+      </Text>
+      <Text variant="body2" color="textSecondary">
+        Expense Type: {expense.expenseType}
+      </Text>
+      <Text variant="body2" color="textSecondary">
+        Amount: ${expense.amount}
+      </Text>
+      <Text variant="body2" color="textSecondary">
+        Created By: {expense.createdBy}
+      </Text>
+      {isAdmin && (
+        <Button size="small" color="primary" onClick={onAssignClick}>
+          Assign to me
+        </Button>
+      )}
+    </Paper>
   );
 };
 

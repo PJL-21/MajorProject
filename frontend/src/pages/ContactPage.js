@@ -1,14 +1,15 @@
-import React from 'react';
-import { Typography, Link } from '@material-ui/core';
+import React from "react";
+import { Text } from "@mantine/core";
 
 const ContactPage = () => {
   return (
     <div>
-      <Typography variant="h4">Contact Us</Typography>
-      <Typography variant="body1">
-        If you have any questions or need assistance, please feel free to contact us at{' '}
+      <Text variant="h4">Contact Us</Text>
+      <Text variant="body1">
+        If you have any questions or need assistance, please feel free to
+        contact us at{" "}
         <Link href="mailto:admin@example.com">admin@example.com</Link>.
-      </Typography>
+      </Text>
     </div>
   );
 };

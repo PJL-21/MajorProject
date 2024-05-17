@@ -1,22 +1,20 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { Button, Typography } from '@material-ui/core';
-import Modal from './Modal'; 
+import React from "react";
+import { Modal, Text, Button, Flex } from "@mantine/core";
+
 const LogoutModal = ({ open, onClose, onConfirm }) => {
   return (
-    <Modal open={open} onClose={onClose}>
-      <Typography variant="h6">Logout Confirmation</Typography>
-      <Typography variant="body1">Are you sure you want to logout?</Typography>
-      <Button onClick={onConfirm} color="primary">Confirm</Button>
-      <Button onClick={onClose} color="secondary">Cancel</Button>
+    <Modal opened={open} onClose={onClose} centered title="Log Out">
+      <Text variant="body1">Are you sure you want to logout?</Text>
+      <Flex mt="xs" gap="xs" justify="end">
+        <Button onClick={onClose} variant="outline">
+          Cancel
+        </Button>
+        <Button onClick={onConfirm}>
+          Confirm
+        </Button>
+      </Flex>
     </Modal>
   );
-};
-
-LogoutModal.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onConfirm: PropTypes.func.isRequired,
 };
 
 export default LogoutModal;

@@ -1,50 +1,51 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Typography, TextField, Button, Container, Box } from '@material-ui/core'; // Import Container and Box from Material-UI
-import { useAuth } from '../components/AuthProvider';
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import { Text, TextInput, Button, Flex } from "@mantine/core";
+import { useAuth } from "../components/AuthProvider";
 
 const LoginPage = () => {
   const { login } = useAuth();
   const history = useHistory();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleLogin = async () => {
+  const handleLogin = async (event) => {
+    event.preventDefault();
+
     try {
       await login(email, password);
-      history.push('/dashboard');
+      history.push("/dashboard");
     } catch (error) {
-      setError('Invalid email or password. Please try again.');
+      setError("Invalid email or password. Please try again.");
     }
   };
 
   return (
-    <Container maxWidth="sm"> {/* Add Container with maxWidth="sm" */}
-      <Box mt={4} p={3} boxShadow={3} borderRadius={8} textAlign="center"> {/* Add Box with padding, boxShadow, borderRadius, and textAlign */}
-        <Typography variant="h4" gutterBottom>Login</Typography>
-        <TextField
+    <form onSubmit={handleLogin}>
+      <Flex direction="column" gap="md">
+        <TextInput
           label="Email"
           type="email"
+          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          fullWidth
-          margin="normal"
+          required
         />
-        <TextField
+        <TextInput
           label="Password"
           type="password"
+          placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          fullWidth
-          margin="normal"
+          required
         />
-        <Button variant="contained" color="primary" onClick={handleLogin}>
+        <Button variant="contained" color="primary" type="submit">
           Login
         </Button>
-        {error && <Typography color="error">{error}</Typography>}
-      </Box>
-    </Container>
+        {error && <Text c="red">{error}</Text>}
+      </Flex>
+    </form>
   );
 };
 
