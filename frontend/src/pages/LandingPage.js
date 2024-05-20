@@ -14,7 +14,7 @@ const LandingPage = () => {
   };
 
   return (
-    <Flex direction="column" gap="xl">
+    <Flex direction="column" align="center" justify="center" gap="xl" style={{ height: '70vh'}}>
       <Group>
         <svg
           style={{ height: "14rem", fill: "#ff922b" }}
