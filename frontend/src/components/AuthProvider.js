@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import axios from "axios";
 
 // Create context for authentication
 const AuthContext = createContext();
@@ -14,15 +14,18 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (token) {
-          const response = await axios.get('http://localhost:5001/api/auth/user', {
-            headers: { Authorization: token }
-          });
-          setUser(response.data.user);
+          const response = await axios.get(
+            "http://localhost:5001/api/auth/user",
+            {
+              headers: { Authorization: token },
+            }
+          );
+          setUser(response.data);
         }
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error("Error fetching user:", error);
       } finally {
         setLoading(false);
       }
@@ -33,28 +36,33 @@ const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('http://localhost:5001/api/auth/login', { email, password });
-      localStorage.setItem('token', response.data.token);
+      const response = await axios.post(
+        "http://localhost:5001/api/auth/login",
+        { email, password }
+      );
+      localStorage.setItem("token", response.data.token);
       setUser(response.data.user);
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       throw error;
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setUser(null);
   };
 
   const isAuthenticated = () => !!user;
+
+  console.log(user);
 
   const value = {
     user,
     loading,
     isAuthenticated,
     login,
-    logout
+    logout,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

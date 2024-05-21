@@ -3,9 +3,13 @@ import React from "react";
 import axios from "axios";
 import { Paper, Text, Button } from "@mantine/core";
 import { useAuth } from "../components/AuthProvider";
+import { useDraggable } from "@dnd-kit/core";
 
 const ExpenseCard = ({ expense, refreshExpenses }) => {
   const { user } = useAuth();
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: expense._id,
+  });
 
   const isAdmin = user.role === "admin";
 
@@ -63,21 +67,25 @@ const ExpenseCard = ({ expense, refreshExpenses }) => {
       onDragOver={onDragOver}
       onDrop={onDrop}
       p="xs"
-      >
+      ref={setNodeRef}
+      style={{ opacity: isDragging ? 0.4 : 1 }}
+      {...listeners}
+      {...attributes}
+    >
       <Text component="h4" fw={600}>
         {expense.title}
       </Text>
-      <Text variant="body2" color="textSecondary">
+      <Text variant="body2" color="textSecondary" fz="sm">
         Expense Type: {expense.expenseType}
       </Text>
-      <Text variant="body2" color="textSecondary">
-        Amount: ${expense.amount}
+      <Text variant="body2" color="textSecondary" fz="sm">
+        Amount: £{expense.amount}
       </Text>
-      <Text variant="body2" color="textSecondary">
-        Created By: {expense.createdBy}
+      <Text variant="body2" color="textSecondary" fz="sm">
+        Created By: {expense.user.username}
       </Text>
       {isAdmin && (
-        <Button size="small" color="primary" onClick={onAssignClick}>
+        <Button size="small" onClick={onAssignClick} variant="default" mt="sm">
           Assign to me
         </Button>
       )}

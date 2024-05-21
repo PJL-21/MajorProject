@@ -8,7 +8,7 @@ const User = require('../models/User');
 // View all expenses (admin only)
 router.get('/expenses', isAdmin, async (req, res) => {
   try {
-    const expenses = await Expense.find();
+    const expenses = await Expense.find().populate("user").exec();
     res.json(expenses);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -46,7 +46,7 @@ router.put('/expenses/:id/stage', isAdmin, async (req, res) => {
       return res.status(400).json({ message: 'Invalid stage' });
     }
 
-    const expense = await Expense.findByIdAndUpdate(id, { stage }, { new: true });
+    const expense = await Expense.findByIdAndUpdate(id, { progress: stage }, { new: true });
     if (!expense) {
       return res.status(404).json({ message: 'Expense not found' });
     }

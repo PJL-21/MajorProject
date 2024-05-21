@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useHistory, Link } from "react-router-dom"; // Import useHistory hook
+import { useHistory, Link } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 import LogoutModal from "./LogoutModal";
 import { Text, Button, NavLink } from "@mantine/core";
@@ -7,7 +7,7 @@ import { Text, Button, NavLink } from "@mantine/core";
 const Navbar = () => {
   const { isAuthenticated, logout } = useAuth();
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
-  const history = useHistory(); // Initialize useHistory hook
+  const history = useHistory();
 
   const handleLogout = () => {
     setLogoutModalOpen(true);
@@ -16,7 +16,7 @@ const Navbar = () => {
   const handleLogoutConfirm = () => {
     logout();
     setLogoutModalOpen(false);
-    history.push("/"); // Redirect to the landing page after logout
+    history.push("/");
   };
 
   const handleLogoutCancel = () => {
@@ -32,6 +32,11 @@ const Navbar = () => {
             component={Link}
             to="/expensing-info"
             label="Expensing Info"
+          />
+          <NavLink
+            component={Link}
+            to="/expense-items"
+            label="Expense Items"
           />
         </>
       )}

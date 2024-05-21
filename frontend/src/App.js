@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
 import ExpensingInfoPage from "./pages/ExpensingInfoPage";
+import ExpenseItemsPage from "./pages/ExpenseItemsPage";
 import ContactPage from "./pages/ContactPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -16,10 +17,9 @@ import { useDisclosure } from "@mantine/hooks";
 import "@mantine/core/styles.css";
 
 const App = () => {
-  const [opened, { toggle }] = useDisclosure();
+  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const location = useLocation();
-
-  console.log(location);
 
   return (
     <AuthProvider>
@@ -28,16 +28,22 @@ const App = () => {
         navbar={{
           width: location.pathname === "/" ? 0 : 300,
           breakpoint: "sm",
-          collapsed: { mobile: !opened },
+          collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
         }}
         p="sm"
       >
-        <AppShell.Header>
+        <AppShell.Header bg="orange.5">
           <Group h="100%" px="md" gap="xs" align="center">
             <Burger
-              opened={opened}
-              onClick={toggle}
+              opened={mobileOpened}
+              onClick={toggleMobile}
               hiddenFrom="sm"
+              size="sm"
+            />
+            <Burger
+              opened={desktopOpened}
+              onClick={toggleDesktop}
+              visibleFrom="sm"
               size="sm"
             />
             <svg
@@ -52,7 +58,7 @@ const App = () => {
             </Text>
           </Group>
         </AppShell.Header>
-        <AppShell.Navbar>
+        <AppShell.Navbar bg="orange.1">
           <Navbar />
         </AppShell.Navbar>
         <AppShell.Main>
@@ -67,6 +73,7 @@ const App = () => {
                 path="/expensing-info"
                 component={ExpensingInfoPage}
               />
+              <Route exact path="/expense-items" component={ExpenseItemsPage} />
               <Route exact path="/contact" component={ContactPage} />
               <PrivateRoute
                 exact

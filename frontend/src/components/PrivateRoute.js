@@ -5,6 +5,8 @@ import { useAuth } from './AuthProvider';
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const { isAuthenticated, loading } = useAuth();
 
+  if (loading) return <>Loading...</>
+
   return (
     <Route
       {...rest}

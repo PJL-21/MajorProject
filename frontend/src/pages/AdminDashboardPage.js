@@ -27,7 +27,7 @@ const AdminDashboardPage = () => {
             {/* TODO */}
             <Text
               primary={expense.title}
-              secondary={`Amount: $${expense.amount}`}
+              secondary={`Amount: £${expense.amount}`}
             />
           </li>
         ))}

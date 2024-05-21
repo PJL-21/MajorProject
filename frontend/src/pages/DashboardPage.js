@@ -1,24 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {
   Text,
   Modal,
-  Paper,
   TextInput,
   Flex,
   Button,
   Select,
-  Box,
   NumberInput,
   Group,
+  FileInput,
 } from "@mantine/core";
 import { useAuth } from "../components/AuthProvider";
 import ExpenseCard from "../components/ExpenseCard";
 import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { useDroppable } from "@dnd-kit/core";
+  DndContext,
+  DragOverlay,
+  useSensors,
+  useSensor,
+  MouseSensor,
+} from "@dnd-kit/core";
+import ExpenseColumn from "../components/ExpenseColumn";
+
 
 const testExpense = {
   _id: 5,
@@ -35,12 +38,14 @@ const DashboardPage = () => {
   const [formData, setFormData] = useState({
     title: "",
     expenseType: "",
-    progress: "in_progress",
+    progress: "submitted",
     amount: "",
     createdBy: user.name,
     createdAt: "",
     updatedAt: "",
+    image: null
   });
+  const [activeTicket, setActiveTicket] = useState(null);
 
   const handleChange = (key, value) => {
     setFormData((formData) => ({
@@ -52,7 +57,6 @@ const DashboardPage = () => {
   const refreshExpenses = () => {
     console.log("Refreshing");
     const token = localStorage.getItem("token");
-
     // Fetch updated expenses
     axios
       .get("http://localhost:5001/api/expenses", {
@@ -89,11 +93,17 @@ const DashboardPage = () => {
 
       refreshExpenses();
 
+      /**
+               /\_/\     meow.
+              ( o.o )
+               > ^ <
+       */
+
       // Clear form data
       setFormData({
         title: "",
         expenseType: "",
-        progress: "in_progress",
+        progress: "submitted",
         amount: "",
       });
 
@@ -116,6 +126,47 @@ const DashboardPage = () => {
   const completed = expenses.filter(
     (expense) => expense.progress === "completed"
   );
+
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 2,
+      },
+    })
+  );
+
+  const onDragStart = (event) => {
+    setActiveTicket(event.active.id);
+  };
+
+  const onDragEnd = async (event) => {
+    const ticketId = event.active.id;
+    const newStatus = event.over.id;
+    console.log(ticketId, "was dropped in", newStatus);
+    setActiveTicket(null);
+    setExpenses((old) =>
+      old.map((ticket) => {
+        if (ticket._id !== ticketId) return ticket;
+        console.log("Found", ticket);
+        return { ...ticket, progress: newStatus };
+      })
+    );
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `http://localhost:5001/api/admin/expenses/${ticketId}/stage`,
+        {
+          stage: newStatus,
+        },
+        {
+          headers: { authorization: token },
+        }
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <>
@@ -154,6 +205,15 @@ const DashboardPage = () => {
               placeholder="0.00"
               min={0}
               decimalScale={2}
+              leftSection="£"
+            />
+            <FileInput
+              name="file" 
+              label="Add Receipt"
+              description="Add an image of your receipt"
+              placeholder="Click here to upload"
+              value={formData.image}
+              onChange={(e) => handleChange("image", e)}
             />
             <Button
               type="submit"
@@ -167,7 +227,7 @@ const DashboardPage = () => {
         </form>
       </Modal>
 
-      <Group align="middle" justify="space-between">
+      <Group align="middle" justify="space-between" mb="xs">
         <Text size="lg" mb="sm" fw={600}>
           Dashboard
         </Text>
@@ -179,60 +239,36 @@ const DashboardPage = () => {
           Add Expense
         </Button>
       </Group>
-      <Paper withBorder>
-        <Flex px="xs">
-          <Box
-            style={{ borderRight: "1px solid #DDD", flexBasis: "100%" }}
-            px="xs"
-          >
-            <Text component="h4" align="center" py="xs">
-              Submitted
-            </Text>
-            <Flex direction="column" gap="xs">
-              {submitted.map((expense) => (
-                <ExpenseCard expense={expense} key={expense._id} />
-              ))}
-            </Flex>
-          </Box>
-          <Box
-            style={{ borderRight: "1px solid #DDD", flexBasis: "100%" }}
-            px="xs"
-          >
-            <Text component="h4" align="center" py="xs">
-              Approved
-            </Text>
-            <Flex direction="column" gap="xs">
-              {approved.map((expense) => (
-                <ExpenseCard expense={expense} key={expense._id} />
-              ))}
-            </Flex>
-          </Box>
-          <Box
-            style={{ borderRight: "1px solid #DDD", flexBasis: "100%" }}
-            px="xs"
-          >
-            <Text component="h4" align="center" py="xs">
-              In Progress
-            </Text>
-            <Flex direction="column" gap="xs">
-              {inProgress.map((expense) => (
-                <ExpenseCard expense={expense} key={expense._id} />
-              ))}
-            </Flex>
-          </Box>
-          <Box style={{ flexBasis: "100%" }} px="xs">
-            <Text component="h4" align="center" py="xs">
-              Completed
-            </Text>
-            <Flex direction="column" gap="xs">
-              {completed.map((expense) => (
-                <ExpenseCard expense={expense} key={expense._id} />
-              ))}
-            </Flex>
-          </Box>
+      <DndContext
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        sensors={sensors}
+      >
+        <Flex gap="sm">
+          <ExpenseColumn
+            title="Submitted"
+            stage="submitted"
+            cards={submitted}
+          />
+          <ExpenseColumn title="Approved" stage="approved" cards={approved} />
+          <ExpenseColumn
+            title="In Progress"
+            stage="in_progress"
+            cards={inProgress}
+          />
+          <ExpenseColumn
+            title="Completed"
+            stage="completed"
+            cards={completed}
+            isEnd
+          />
         </Flex>
-      </Paper>
-      {/* Add Expense Form Button */}
+        <DragOverlay>
+          <ExpenseCard
+            expense={expenses.find((expense) => expense._id === activeTicket)}
+          />
+        </DragOverlay>
+      </DndContext>
     </>
   );
 };
