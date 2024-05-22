@@ -7,6 +7,7 @@ import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
 import ExpensingInfoPage from "./pages/ExpensingInfoPage";
 import ExpenseItemsPage from "./pages/ExpenseItemsPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
 import ContactPage from "./pages/ContactPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -72,6 +73,10 @@ const App = () => {
                 exact
                 path="/expensing-info"
                 component={ExpensingInfoPage}
+              />
+              <Route
+                exact path="/analytics-page"
+                component={AnalyticsPage}
               />
               <Route exact path="/expense-items" component={ExpenseItemsPage} />
               <Route exact path="/contact" component={ContactPage} />

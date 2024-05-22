@@ -38,6 +38,11 @@ const Navbar = () => {
             to="/expense-items"
             label="Expense Items"
           />
+          <NavLink
+            component={Link}
+            to="/analytics-page"
+            label="My Analytics"
+          />
         </>
       )}
       {isAuthenticated() ? (
