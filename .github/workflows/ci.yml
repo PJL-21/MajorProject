@@ -35,6 +35,11 @@ jobs:
           cd frontend
           npm test
 
+      - name: Run frontend security tests
+        run: |
+          cd frontend
+          npm run test:security
+
       - name: Build frontend
         run: |
           cd frontend
@@ -54,6 +59,11 @@ jobs:
         run: |
           cd backend
           npm test
+
+      - name: Run backend security tests
+        run: |
+          cd backend
+          npm run test:security
 
       - name: Build backend
         run: |
