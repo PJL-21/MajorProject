@@ -1,23 +1,21 @@
 import React from 'react';
-import { BarChart } from '@mantine/charts';
+import { LineChart } from '@mantine/charts';
 import { data } from '../data';
 
-function Demo() {
+function LineChartDemo() {
   return (
-    <BarChart
+    <LineChart
       h={400}
       data={data}
-      dataKey="month"
-      type="stacked"
-      withLegend
-      legendProps={{ verticalAlign: 'bottom' }}
+      dataKey="category"
       series={[
         { name: 'DailyTravel', label: 'Daily Travel', color: 'orange.6' },
         { name: 'OfficeItems', label: 'Office Items', color: 'orange.4' },
         { name: 'WorkTrip', label: 'Work Trip', color: 'orange.2' },
       ]}
+      curveType="linear"
     />
   );
 }
 
-export default Demo;
+export default LineChartDemo;

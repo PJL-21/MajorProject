@@ -7,11 +7,11 @@ import { useDraggable } from "@dnd-kit/core";
 
 const ExpenseCard = ({ expense, refreshExpenses }) => {
   const { user } = useAuth();
+  const isAdmin = user.role === "admin";
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: expense._id,
+    disabled: !isAdmin,
   });
-
-  const isAdmin = user.role === "admin";
 
   const onAssignClick = async () => {
     try {
