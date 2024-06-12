@@ -2,7 +2,7 @@
 import React from "react";
 import axios from "axios";
 import { Paper, Text, Button } from "@mantine/core";
-import { useAuth } from "../components/AuthProvider";
+import { useAuth } from "./AuthProvider";
 import { useDraggable } from "@dnd-kit/core";
 
 const ExpenseCard = ({ expense, refreshExpenses }) => {

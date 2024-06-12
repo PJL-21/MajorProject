@@ -1,6 +1,6 @@
 // backend/tests/security.tests.js
 const request = require('supertest');
-const app = require('../index'); // Adjust the path to your server entry point
+const app = require('../index'); 
 
 describe('Security Tests', () => {
   it('should prevent SQL injection attacks', async () => {
