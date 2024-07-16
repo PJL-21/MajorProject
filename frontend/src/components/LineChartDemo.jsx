@@ -9,9 +9,9 @@ function LineChartDemo() {
       data={data}
       dataKey="category"
       series={[
-        { name: 'DailyTravel', label: 'Daily Travel', color: 'orange.6' },
-        { name: 'OfficeItems', label: 'Office Items', color: 'orange.4' },
-        { name: 'WorkTrip', label: 'Work Trip', color: 'orange.2' },
+        { name: 'DailyTravel', label: 'Daily Travel', color: 'blue.6' },
+        { name: 'OfficeItems', label: 'Office Items', color: 'blue.4' },
+        { name: 'WorkTrip', label: 'Work Trip', color: 'blue.2' },
       ]}
       curveType="linear"
     />

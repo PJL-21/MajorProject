@@ -19,7 +19,7 @@ const ExpenseColumn = ({ cards, title, stage }) => {
         {title}
       </Text>
       <Divider />
-      <Flex direction="column" gap="xs" style={{ flexGrow: "1" }} p="xs" bg="gray.1">
+      <Flex direction="column" gap="xs" style={{ flexGrow: "1" }} p="xs" bg="blue.1">
         {cards.map((expense) => (
           <ExpenseCard expense={expense} key={expense._id} />
         ))}
