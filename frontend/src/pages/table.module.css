@@ -1,0 +1,4 @@
+.table tr > *:first-child {
+  width: 30%;
+  padding-left: 15px;
+}

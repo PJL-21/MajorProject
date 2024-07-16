@@ -207,6 +207,7 @@ const DashboardPage = () => {
               decimalScale={2}
               leftSection="£"
             />
+            <TextInput label="Budget Code" placeholder="0000" disabled />
             <FileInput
               name="file" 
               label="Add Receipt"

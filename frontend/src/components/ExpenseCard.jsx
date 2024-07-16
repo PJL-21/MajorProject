@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { Paper, Text, Button } from "@mantine/core";
+import { Paper, Text, Button, NumberFormatter } from "@mantine/core";
 import { useAuth } from "./AuthProvider";
 import { useDraggable } from "@dnd-kit/core";
 
@@ -78,7 +78,11 @@ const ExpenseCard = ({ expense, refreshExpenses }) => {
         Expense Type: {expense.expenseType}
       </Text>
       <Text variant="body2" color="textSecondary" fz="sm">
-        Amount: £{expense.amount}
+        Budget Code: 0000
+      </Text>
+      <Text variant="body2" color="textSecondary" fz="sm">
+        Amount:{" "}
+        <NumberFormatter prefix="£" value={expense.amount} thousandSeparator />
       </Text>
       <Text variant="body2" color="textSecondary" fz="sm">
         Created By: {expense.user.username}
