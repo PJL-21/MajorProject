@@ -124,7 +124,7 @@ const ExpenseItemsPage = () => {
 
   return (
     <Stack>
-      <Text variant="h4" align="center" mt="lg">
+      <Text size="lg" mb="sm" fw={600} align="center">
         Expense Items
       </Text>
       <Group justify="end" wrap="nowrap">

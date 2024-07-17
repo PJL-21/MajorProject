@@ -109,9 +109,9 @@ const AnalyticsPage = () => {
     <div>
       <Container size="sm">
         <StatsGrid />
-        <Text variant="h1" align="center" mt="lg">
-          My Expenses
-        </Text>
+        <Text size="lg" mb="sm" fw={600} align="center">
+        My Expenses
+      </Text>
         <Text variant="h5">Expenses per month</Text>
         <Demo />
         <Divider margins="lg" />
